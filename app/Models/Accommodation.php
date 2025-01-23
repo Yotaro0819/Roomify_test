@@ -28,4 +28,8 @@ class Accommodation extends Model
 
     // 日付のフォーマット（オプション）
     protected $dates = ['created_at', 'updated_at'];
+
+    public function tags() {
+        return $this->belongsToMany(Tag::class);
+    }
 }

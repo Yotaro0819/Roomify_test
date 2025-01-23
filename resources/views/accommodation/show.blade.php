@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Accommodation Details</title>
+
+
 <script>
     const apiKey = "{{ config('services.google_maps.api_key') }}";
 
@@ -47,6 +49,12 @@
     {{-- <p>Latitude: {{ $accommodation->latitude }}</p>
     <p>Longitude: {{ $accommodation->longitude }}</p> --}}
         <div id="map" style="height: 300px; width: 50%; margin: auto"></div>
+</div>
+<div>
+    <h3>Tags:</h3>
+    @foreach($accommodation->tags as $tag)
+        <a href="{{ route('tag.show', $tag->id)}}" class="tag-link text-decoration-none">{{ $tag->name }},</a>
+    @endforeach
 </div>
 
 

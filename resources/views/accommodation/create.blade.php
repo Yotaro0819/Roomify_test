@@ -9,10 +9,11 @@
     <label for="city">City:</label>
     <input type="text" id="city" name="city" required />
 
-    <label for="street">Street:</label>
-    <input type="text" id="street" name="street" required />
     <p>
         If automatic recognition is not possible, please enter the address manually.</p>
+
+    <label for="description">Description</label>
+    <textarea name="description" id="description" col="30" rows="5"></textarea>
 
     <button type="submit">Register</button>
 </form>

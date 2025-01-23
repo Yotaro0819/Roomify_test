@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Accommodation;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -15,13 +16,19 @@ class AccommodationController extends Controller
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string',
+            'city' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
         // リクエストから宿泊施設名と住所を取得
-        $name = $request->input('name');
-        $address = $request->input('address');
-        $prefecture = $request->input('prefecture');
-        $city = $request->input('city');
-        $street = $request->input('street');
-        $apiKey = "AIzaSyC5WwFaRtTQUz9vdq9DLMbrYcSUWx7rjSs";
+        $name = $validated['name'];
+        $address = $validated['address'];
+        $city = $validated['city'];
+        $description = $validated['description'] ?? null;
+
 
         try {
             // Google Geocoding APIを使用して緯度と経度、住所コンポーネントを取得
@@ -45,12 +52,24 @@ class AccommodationController extends Controller
                 $accommodation = Accommodation::create([
                     'name' => $name,
                     'address' => $address,
-                    'prefecture' => $prefecture,
                     'city' => $city,
-                    'street' => $street,
+                    'description' => $description,
                     'latitude' => $latitude,
                     'longitude' => $longitude,
                 ]);
+
+                if(!empty($validated['description'])) {
+                    preg_match_all('/#(\w+)/', $validated['description'], $matches);
+                    $tags = $matches[1];
+
+                    $tagIds = [];
+                    foreach($tags as $tagName) {
+                        $tag = Tag::firstOrCreate(['name' => $tagName]);
+                        $tagIds[] = $tag->id;
+                    }
+
+                    $accommodation->tags()->attach($tagIds);
+                }
 
                 return redirect()->route('accommodation.show', $accommodation->id)
                     ->with('success', '宿泊施設が登録されました');
